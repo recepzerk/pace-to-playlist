@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Pace → Playlist | Running Music by Pace & BPM</title>
+  <meta name="description" content="Find the perfect running playlist for your pace. Enter your min/km or min/mile and get 10 songs matched to your cadence BPM — from easy jog to race pace." />
+  <meta name="keywords" content="running playlist, pace to BPM, running music, cadence calculator, runner songs, tempo run playlist, running pace tool" />
+  <meta name="author" content="Pace to Playlist" />
+  <meta name="robots" content="index, follow" />
+
+  <!-- Open Graph -->
+  <meta property="og:title" content="Pace → Playlist | Running Music by Pace & BPM" />
+  <meta property="og:description" content="Enter your running pace and instantly get 10 songs perfectly matched to your stride cadence. Free tool for runners." />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://yourusername.github.io/pace-to-playlist" />
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="Pace → Playlist | Running Music by Pace & BPM" />
+  <meta name="twitter:description" content="Enter your running pace and get 10 songs matched to your cadence. Free tool for runners." />
+
+  <link rel="canonical" href="https://yourusername.github.io/pace-to-playlist" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:        #0d0d0d;
+      --surface:   #161616;
+      --surface2:  #1f1f1f;
+      --border:    rgba(255,255,255,0.08);
+      --border2:   rgba(255,255,255,0.14);
+      --text:      #f0f0f0;
+      --muted:     #888;
+      --dim:       #555;
+      --accent:    #e8ff47;
+      --accent-dk: #b8cc00;
+      --red:       #ff5c5c;
+      --orange:    #ff9a3c;
+      --blue:      #5ba4f5;
+      --green:     #4cde80;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      line-height: 1.6;
+    }
+
+    /* ── NOISE TEXTURE ── */
+    body::before {
+      content: '';
+      position: fixed; inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+      pointer-events: none; z-index: 0; opacity: 0.5;
+    }
+
+    .wrap { position: relative; z-index: 1; max-width: 720px; margin: 0 auto; padding: 3rem 1.5rem 5rem; }
+
+    /* ── HEADER ── */
+    header { margin-bottom: 3rem; }
+    .eyebrow {
+      font-size: 11px; letter-spacing: 3px; text-transform: uppercase;
+      color: var(--accent); font-weight: 500; margin-bottom: 10px;
+      display: flex; align-items: center; gap: 8px;
+    }
+    .eyebrow::before {
+      content: ''; display: inline-block;
+      width: 24px; height: 1px; background: var(--accent);
+    }
+    h1 {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: clamp(56px, 10vw, 96px);
+      letter-spacing: 2px;
+      line-height: 0.9;
+      color: var(--text);
+    }
+    h1 span { color: var(--accent); }
+    .tagline { margin-top: 14px; font-size: 15px; color: var(--muted); max-width: 420px; }
+
+    /* ── INPUT CARD ── */
+    .input-card {
+      background: var(--surface);
+      border: 0.5px solid var(--border2);
+      border-radius: 16px;
+      padding: 2rem;
+      margin-bottom: 2rem;
+    }
+    .input-grid { display: flex; gap: 16px; align-items: flex-end; flex-wrap: wrap; }
+
+    .field { display: flex; flex-direction: column; gap: 8px; }
+    .field-label {
+      font-size: 10px; font-weight: 500; letter-spacing: 2px;
+      text-transform: uppercase; color: var(--dim);
+    }
+
+    .pace-row { display: flex; align-items: center; gap: 6px; }
+    .pace-row input {
+      width: 70px; text-align: center;
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 28px; letter-spacing: 1px;
+      background: var(--surface2);
+      border: 0.5px solid var(--border2);
+      border-radius: 10px;
+      color: var(--text);
+      padding: 10px 8px;
+      transition: border-color 0.2s;
+      -moz-appearance: textfield;
+    }
+    .pace-row input::-webkit-inner-spin-button,
+    .pace-row input::-webkit-outer-spin-button { -webkit-appearance: none; }
+    .pace-row input:focus { outline: none; border-color: var(--accent); }
+    .colon {
+      font-family: 'Bebas Neue'; font-size: 28px;
+      color: var(--dim); padding-bottom: 2px;
+    }
+
+    select {
+      background: var(--surface2);
+      border: 0.5px solid var(--border2);
+      border-radius: 10px;
+      color: var(--text);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 14px;
+      padding: 12px 16px;
+      cursor: pointer;
+      transition: border-color 0.2s;
+    }
+    select:focus { outline: none; border-color: var(--accent); }
+
+    .btn {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 20px; letter-spacing: 1.5px;
+      background: var(--accent);
+      color: #0d0d0d;
+      border: none;
+      border-radius: 10px;
+      padding: 13px 32px;
+      cursor: pointer;
+      transition: background 0.15s, transform 0.1s;
+      white-space: nowrap;
+    }
+    .btn:hover { background: #f5ff70; }
+    .btn:active { transform: scale(0.97); }
+
+    /* ── THRESHOLD INFO ── */
+    .thresholds {
+      display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px;
+      margin-bottom: 2rem;
+    }
+    .th-card {
+      border: 0.5px solid var(--border);
+      border-radius: 10px;
+      padding: 10px 12px;
+      transition: border-color 0.3s, background 0.3s;
+    }
+    .th-card.active { border-color: var(--accent); background: rgba(232,255,71,0.05); }
+    .th-name { font-size: 10px; letter-spacing: 1.5px; text-transform: uppercase; color: var(--dim); margin-bottom: 4px; }
+    .th-pace { font-family: 'Bebas Neue'; font-size: 16px; letter-spacing: 0.5px; }
+    .th-pace.c-green { color: var(--green); }
+    .th-pace.c-blue  { color: var(--blue); }
+    .th-pace.c-orange { color: var(--orange); }
+    .th-pace.c-red   { color: var(--red); }
+
+    /* ── RESULTS ── */
+    #results { display: none; }
+    #results.show { display: block; }
+
+    .stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 1.5rem; }
+    .stat {
+      background: var(--surface);
+      border: 0.5px solid var(--border);
+      border-radius: 12px;
+      padding: 1rem 1.25rem;
+      text-align: center;
+    }
+    .stat-label { font-size: 10px; letter-spacing: 1.5px; text-transform: uppercase; color: var(--dim); margin-bottom: 6px; }
+    .stat-val { font-family: 'Bebas Neue'; font-size: 32px; letter-spacing: 1px; line-height: 1; }
+    .stat-unit { font-size: 11px; color: var(--dim); margin-top: 3px; }
+
+    .type-pill {
+      display: inline-flex; align-items: center; gap: 8px;
+      border-radius: 99px;
+      padding: 6px 18px;
+      font-size: 13px; font-weight: 500;
+      margin-bottom: 1.5rem;
+    }
+    .type-pill svg { width: 16px; height: 16px; flex-shrink: 0; }
+
+    .section-heading {
+      font-family: 'Bebas Neue';
+      font-size: 13px; letter-spacing: 3px;
+      text-transform: uppercase; color: var(--dim);
+      margin-bottom: 12px;
+    }
+
+    /* ── SONG CARDS ── */
+    .playlist { display: flex; flex-direction: column; gap: 6px; }
+    .song {
+      display: flex; align-items: center; gap: 14px;
+      background: var(--surface);
+      border: 0.5px solid var(--border);
+      border-radius: 12px;
+      padding: 12px 16px;
+      transition: border-color 0.15s, background 0.15s;
+      animation: slideUp 0.3s both;
+    }
+    .song:hover { border-color: var(--border2); background: var(--surface2); }
+    @keyframes slideUp {
+      from { opacity: 0; transform: translateY(8px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    .song-num {
+      font-family: 'Bebas Neue'; font-size: 20px;
+      color: var(--dim); width: 26px; text-align: center; flex-shrink: 0;
+    }
+    .song-info { flex: 1; min-width: 0; }
+    .song-title { font-size: 14px; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .song-artist { font-size: 12px; color: var(--muted); margin-top: 1px; }
+    .song-why { font-size: 11px; color: var(--dim); margin-top: 3px; font-style: italic; }
+    .song-bpm { flex-shrink: 0; text-align: right; }
+    .bpm-val { font-family: 'Bebas Neue'; font-size: 20px; letter-spacing: 0.5px; }
+    .bpm-lbl { font-size: 10px; color: var(--dim); letter-spacing: 1px; }
+
+    /* ── FOOTER ── */
+    footer {
+      margin-top: 4rem;
+      padding-top: 2rem;
+      border-top: 0.5px solid var(--border);
+      font-size: 12px; color: var(--dim);
+      display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px;
+    }
+    footer a { color: var(--muted); text-decoration: none; }
+    footer a:hover { color: var(--accent); }
+
+    @media (max-width: 520px) {
+      .thresholds { grid-template-columns: repeat(2, 1fr); }
+      .stats { grid-template-columns: repeat(2, 1fr); }
+      .stats .stat:last-child { grid-column: 1 / -1; }
+      .input-grid { flex-direction: column; align-items: stretch; }
+      .btn { width: 100%; text-align: center; }
+    }
+  </style>
+</head>
+<body>
+<div class="wrap">
+
+  <!-- HEADER -->
+  <header>
+    <p class="eyebrow">Running tool</p>
+    <h1>Pace →<br><span>Playlist</span></h1>
+    <p class="tagline">Enter your running pace and get 10 songs perfectly matched to your stride cadence.</p>
+  </header>
+
+  <!-- INPUT -->
+  <div class="input-card">
+    <div class="input-grid">
+      <div class="field">
+        <span class="field-label">Your Pace</span>
+        <div class="pace-row">
+          <input type="number" id="min-input" min="2" max="15" value="5" aria-label="Minutes" />
+          <span class="colon">:</span>
+          <input type="number" id="sec-input" min="0" max="59" value="30" aria-label="Seconds" />
+        </div>
+      </div>
+      <div class="field">
+        <span class="field-label">Unit</span>
+        <select id="unit-sel" aria-label="Unit">
+          <option value="km">min / km</option>
+          <option value="mi">min / mile</option>
+        </select>
+      </div>
+      <div class="field" style="flex:1; min-width:140px;">
+        <span class="field-label">&nbsp;</span>
+        <button class="btn" onclick="generate()">Generate Playlist</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- THRESHOLDS (visual guide) -->
+  <div class="thresholds" id="th-cards">
+    <div class="th-card" id="th-walk">
+      <div class="th-name">Walk / Jog</div>
+      <div class="th-pace c-green">8:00+</div>
+    </div>
+    <div class="th-card" id="th-easy">
+      <div class="th-name">Easy Run</div>
+      <div class="th-pace c-blue">6:00 – 7:59</div>
+    </div>
+    <div class="th-card" id="th-tempo">
+      <div class="th-name">Tempo Run</div>
+      <div class="th-pace c-orange">4:20 – 5:59</div>
+    </div>
+    <div class="th-card" id="th-race">
+      <div class="th-name">Race / Interval</div>
+      <div class="th-pace c-red">&lt; 4:20</div>
+    </div>
+  </div>
+
+  <!-- RESULTS -->
+  <div id="results" role="region" aria-live="polite" aria-label="Playlist results">
+
+    <div class="stats">
+      <div class="stat">
+        <div class="stat-label">BPM Range</div>
+        <div class="stat-val" id="r-bpm" style="color:var(--accent)">—</div>
+        <div class="stat-unit">beats / min</div>
+      </div>
+      <div class="stat">
+        <div class="stat-label">Speed</div>
+        <div class="stat-val" id="r-speed">—</div>
+        <div class="stat-unit" id="r-speed-unit">km / h</div>
+      </div>
+      <div class="stat">
+        <div class="stat-label">Target Cadence</div>
+        <div class="stat-val" id="r-cadence">—</div>
+        <div class="stat-unit">steps / min</div>
+      </div>
+    </div>
+
+    <div id="r-pill"></div>
+
+    <p class="section-heading">Your Playlist</p>
+    <div class="playlist" id="playlist"></div>
+  </div>
+
+  <!-- FOOTER -->
+  <footer>
+    <span>Pace → Playlist &mdash; built for runners</span>
+    <a href="https://github.com/" target="_blank" rel="noopener">GitHub ↗</a>
+  </footer>
+
+</div>
+
+<script>
+  /* ── DATA ── */
+  const DATA = {
+    walk: {
+      label: "Walk / Easy Jog", bpm: "95–130", cadence: 130,
+      pill: { bg: "rgba(76,222,128,0.12)", border: "#4cde80", text: "#4cde80" },
+      icon: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="5" r="1"/><path d="M9 20l1-5 2 2 1-4"/><path d="M6 11l1-3 5 1 2 3"/><path d="M15 20l-1-5"/></svg>`,
+      songs: [
+        { title: "Sunflower", artist: "Post Malone & Swae Lee", bpm: 98, why: "Smooth groove — perfect for warming up" },
+        { title: "Happy", artist: "Pharrell Williams", bpm: 160, why: "Uplifting feel, easy pace buddy" },
+        { title: "Levitating", artist: "Dua Lipa", bpm: 103, why: "Light energy, natural breathing rhythm" },
+        { title: "Good as Hell", artist: "Lizzo", bpm: 96, why: "Confidence boost at a relaxed pace" },
+        { title: "Uptown Funk", artist: "Mark Ronson ft. Bruno Mars", bpm: 115, why: "Groovy but manageable tempo" },
+        { title: "Can't Stop the Feeling", artist: "Justin Timberlake", bpm: 113, why: "Soft rhythm, long-walk friendly" },
+        { title: "Walking on Sunshine", artist: "Katrina & the Waves", bpm: 109, why: "Classic motivational walk track" },
+        { title: "Vienna", artist: "Billy Joel", bpm: 94, why: "Rhythmic and relaxed — brisk walk" },
+        { title: "Shake It Off", artist: "Taylor Swift", bpm: 160, why: "Cheerful tempo, starter energy" },
+        { title: "Dancing Queen", artist: "ABBA", bpm: 100, why: "Timeless groove, stress-free cadence" },
+      ]
+    },
+    easy: {
+      label: "Easy Run — Aerobic Zone", bpm: "130–155", cadence: 150,
+      pill: { bg: "rgba(91,164,245,0.12)", border: "#5ba4f5", text: "#5ba4f5" },
+      icon: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="13" cy="4" r="1"/><path d="M7 21l2-8 3 3 1-5"/><path d="M10 12l-2-4 5 1 1 4"/><path d="M17 21l-1-8"/></svg>`,
+      songs: [
+        { title: "Eye of the Tiger", artist: "Survivor", bpm: 109, why: "Classic runner's anthem — gets you going" },
+        { title: "Don't Stop Me Now", artist: "Queen", bpm: 156, why: "Lively but controlled for easy runs" },
+        { title: "Mr. Brightside", artist: "The Killers", bpm: 148, why: "Rhythm carries your stride naturally" },
+        { title: "Moves Like Jagger", artist: "Maroon 5", bpm: 128, why: "Fluid tempo, easy breathing" },
+        { title: "Run the World", artist: "Beyoncé", bpm: 130, why: "Empowering energy — keeps you moving" },
+        { title: "Titanium", artist: "David Guetta ft. Sia", bpm: 126, why: "Steady and calm — long run companion" },
+        { title: "Sweet Disposition", artist: "The Temper Trap", bpm: 138, why: "Atmospheric and immersive rhythm" },
+        { title: "Take Me to Church", artist: "Hozier", bpm: 130, why: "Dramatic buildup, emotionally engaging" },
+        { title: "Lose Yourself", artist: "Eminem", bpm: 86, why: "The words carry you, body follows" },
+        { title: "Stronger", artist: "Kanye West", bpm: 104, why: "Powerful beat, mind locks in" },
+      ]
+    },
+    tempo: {
+      label: "Tempo Run — Threshold Zone", bpm: "155–175", cadence: 165,
+      pill: { bg: "rgba(255,154,60,0.12)", border: "#ff9a3c", text: "#ff9a3c" },
+      icon: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8.5 14.5A2.5 2.5 0 0011 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 11-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 002.5 2.5z"/></svg>`,
+      songs: [
+        { title: "Pump It", artist: "Black Eyed Peas", bpm: 142, why: "Built for tempo running" },
+        { title: "Till I Collapse", artist: "Eminem ft. Nate Dogg", bpm: 171, why: "Elite runner favourite worldwide" },
+        { title: "Kernkraft 400", artist: "Zombie Nation", bpm: 138, why: "Minimal but powerful — focus mode" },
+        { title: "Radioactive", artist: "Imagine Dragons", bpm: 136, why: "Explosive opener, builds pace" },
+        { title: "Run Boy Run", artist: "Woodkid", bpm: 130, why: "Epic, cinematic running energy" },
+        { title: "Can't Hold Us", artist: "Macklemore & Ryan Lewis", bpm: 146, why: "High energy — minutes fly by" },
+        { title: "Remember the Name", artist: "Fort Minor", bpm: 86, why: "Motivational burst, strong lyrics" },
+        { title: "Power", artist: "Kanye West", bpm: 95, why: "Heavy dominant beat, locks in stride" },
+        { title: "Jump Around", artist: "House of Pain", bpm: 140, why: "Aggressive rhythm, sustains speed" },
+        { title: "Seven Nation Army", artist: "The White Stripes", bpm: 124, why: "Iconic riff stabilises cadence" },
+      ]
+    },
+    race: {
+      label: "Race Pace / Intervals", bpm: "170–185", cadence: 178,
+      pill: { bg: "rgba(255,92,92,0.12)", border: "#ff5c5c", text: "#ff5c5c" },
+      icon: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="6"/><path d="M15.477 12.89L17 22l-5-3-5 3 1.523-9.11"/></svg>`,
+      songs: [
+        { title: "Thunderstruck", artist: "AC/DC", bpm: 133, why: "Electric charge for race start" },
+        { title: "Sandstorm", artist: "Darude", bpm: 136, why: "EDM classic, rhythm takes over" },
+        { title: "Battery", artist: "Metallica", bpm: 170, why: "BPM matches sprint cadence perfectly" },
+        { title: "Faint", artist: "Linkin Park", bpm: 136, why: "Explosive energy, finish line is visible" },
+        { title: "Born to Run", artist: "Bruce Springsteen", bpm: 148, why: "Racing spirit — the name says it all" },
+        { title: "Welcome to the Jungle", artist: "Guns N' Roses", bpm: 132, why: "Iconic intro, blood starts pumping" },
+        { title: "Uprising", artist: "Muse", bpm: 128, why: "Revolutionary energy — save for last km" },
+        { title: "Fury", artist: "Muse", bpm: 166, why: "Race pace BPM match" },
+        { title: "Smells Like Teen Spirit", artist: "Nirvana", bpm: 117, why: "Adrenaline burst, unstoppable feeling" },
+        { title: "Run", artist: "Joji", bpm: 172, why: "Perfect sync with sprint cadence" },
+      ]
+    }
+  };
+
+  /* ── LOGIC ── */
+  function getType(paceSec) {
+    if (paceSec >= 480) return 'walk';
+    if (paceSec >= 360) return 'easy';
+    if (paceSec >= 260) return 'tempo';
+    return 'race';
+  }
+
+  function generate() {
+    const mins = Math.max(0, parseInt(document.getElementById('min-input').value) || 0);
+    const secs = Math.min(59, Math.max(0, parseInt(document.getElementById('sec-input').value) || 0));
+    const unit = document.getElementById('unit-sel').value;
+
+    let paceSec = mins * 60 + secs;
+    const pacePerKm = unit === 'km' ? paceSec : paceSec / 1.60934;
+    const speedKmh = (3600 / pacePerKm).toFixed(1);
+    const speedDisplay = unit === 'km' ? speedKmh : (speedKmh / 1.60934).toFixed(1);
+
+    const type = getType(pacePerKm);
+    const d = DATA[type];
+
+    /* stats */
+    document.getElementById('r-bpm').textContent = d.bpm;
+    document.getElementById('r-speed').textContent = speedDisplay;
+    document.getElementById('r-speed-unit').textContent = unit === 'km' ? 'km / h' : 'mph';
+    document.getElementById('r-cadence').textContent = d.cadence;
+
+    /* pill */
+    document.getElementById('r-pill').innerHTML = `
+      <span style="display:inline-flex;align-items:center;gap:8px;padding:7px 18px;border-radius:99px;
+        background:${d.pill.bg};border:0.5px solid ${d.pill.border};
+        color:${d.pill.text};font-size:13px;font-weight:500;margin-bottom:1.5rem;">
+        ${d.icon}${d.label}
+      </span>`;
+
+    /* highlight threshold */
+    ['walk','easy','tempo','race'].forEach(k => {
+      document.getElementById('th-' + k).classList.toggle('active', k === type);
+    });
+
+    /* songs */
+    document.getElementById('playlist').innerHTML = d.songs.map((s, i) => `
+      <div class="song" style="animation-delay:${i * 40}ms">
+        <div class="song-num">${i + 1}</div>
+        <div class="song-info">
+          <div class="song-title">${s.title}</div>
+          <div class="song-artist">${s.artist}</div>
+          <div class="song-why">${s.why}</div>
+        </div>
+        <div class="song-bpm" style="color:${d.pill.text}">
+          <div class="bpm-val">${s.bpm}</div>
+          <div class="bpm-lbl">BPM</div>
+        </div>
+      </div>`).join('');
+
+    const results = document.getElementById('results');
+    results.classList.add('show');
+    results.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+
+  /* allow Enter key */
+  document.addEventListener('keydown', e => { if (e.key === 'Enter') generate(); });
+</script>
+</body>
+</html>
